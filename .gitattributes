@@ -1,2 +1,4 @@
 
 # Third-party code
+/[Dd]ep/[Ii]nclude/stb_image_write.h linguist-vendored
+/[Dd]ep/[Ii]nclude/stb_image.h linguist-vendored

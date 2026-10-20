@@ -1,17 +1,19 @@
 #include "TerrainController.h"
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 std::vector<std::vector<float>> TerrainController::heightMap;
 float TerrainController::terrainScale = 1.0f;
 
-void TerrainController::GenerateTerrainMesh(const std::string &objFilename, int width, int depth, float scale)
+void TerrainController::GenerateTerrainMesh(const std::string &objFilename, int seed, int width, int depth, float scale)
 {
-    // 1. Seed and Initialize Noise
+    // Seed and Initialize Noise
     Noise noise;
     std::srand(static_cast<unsigned>(0));
-    int seed = std::rand();
     noise.seed(seed);
     std::string baseName = objFilename.substr(0, objFilename.find_last_of('.'));
-    std::string textureFilename = baseName + "_texture.bmp";
+    std::string textureFilename = baseName + "_texture.png";
 
     // Define terrain types
     TerrainType waterTerrain(0.2f, 0.4f, {30, 176, 251}, {40, 255, 255});
@@ -23,7 +25,7 @@ void TerrainController::GenerateTerrainMesh(const std::string &objFilename, int 
     std::vector<TerrainType> terrainTypes = {
         waterTerrain, sandTerrain, grassTerrain, treesTerrain, rockTerrain};
 
-    // 2. Generate noise map matching the width and depth
+    // Generate noise map matching the width and depth
     auto noiseMap = TerrainController::generateNoiseMap(width, depth, noise, 125.0f, 4, 0.5f, 2.0f, 0.0f, 0.0f);
 
     heightMap = noiseMap;
@@ -61,7 +63,7 @@ void TerrainController::GenerateTerrainMesh(const std::string &objFilename, int 
     // Adjust this multiplier to make mountains taller or flatter
     float heightMultiplier = 50.0f;
 
-    // 3. Generate vertices, texture coordinates, and colors
+    // Generate vertices, texture coordinates, and colors
     for (int z = 0; z < depth; ++z)
     {
         for (int x = 0; x < width; ++x)
@@ -106,7 +108,7 @@ void TerrainController::GenerateTerrainMesh(const std::string &objFilename, int 
 
     objFile << "\n";
 
-    // 4. Create indices for grid triangles and write faces (f v/vt/vn)
+    // Create indices for grid triangles and write faces (f v/vt/vn)
     for (int z = 0; z < depth - 1; ++z)
     {
         for (int x = 0; x < width - 1; ++x)
@@ -132,8 +134,8 @@ void TerrainController::GenerateTerrainMesh(const std::string &objFilename, int 
 
     objFile.close();
 
-    // 5. Generate and save the BMP texture image
-    saveBMP(textureFilename, width, depth, colorMap);
+    // Generate and save the BMP texture image
+    savePNG(textureFilename, width, depth, colorMap);
 }
 
 void TerrainController::saveBMP(const std::string &filename, int width, int height, const std::vector<std::vector<std::array<int, 3>>> &colorMap)
@@ -192,6 +194,48 @@ void TerrainController::saveBMP(const std::string &filename, int width, int heig
             f.write(reinterpret_cast<char *>(bmpPad), paddingBytes);
         }
     }
+}
+
+void TerrainController::saveJPG(const std::string& filename, int width, int height, const std::vector<std::vector<std::array<int, 3>>>& colorMap)
+{
+    // Flatten the 2D colorMap into a 1D RGB byte array (top-to-bottom order)
+    std::vector<unsigned char> pixels;
+    pixels.reserve(width * height * 3);
+
+    for (int z = 0; z < height; ++z)
+    {
+        for (int x = 0; x < width; ++x)
+        {
+            const auto& rgb = colorMap[x][z];
+            pixels.push_back(static_cast<unsigned char>(rgb[0])); // Red
+            pixels.push_back(static_cast<unsigned char>(rgb[1])); // Green
+            pixels.push_back(static_cast<unsigned char>(rgb[2])); // Blue
+        }
+    }
+
+    // Write to JPG (quality set to 90 out of 100)
+    stbi_write_jpg(filename.c_str(), width, height, 3, pixels.data(), 90);
+}
+
+void TerrainController::savePNG(const std::string& filename, int width, int height, const std::vector<std::vector<std::array<int, 3>>>& colorMap)
+{
+    // Flatten the 2D colorMap into a 1D RGB byte array (top-to-bottom order)
+    std::vector<unsigned char> pixels;
+    pixels.reserve(width * height * 3);
+
+    for (int z = 0; z < height; ++z)
+    {
+        for (int x = 0; x < width; ++x)
+        {
+            const auto& rgb = colorMap[x][z];
+            pixels.push_back(static_cast<unsigned char>(rgb[0])); // Red
+            pixels.push_back(static_cast<unsigned char>(rgb[1])); // Green
+            pixels.push_back(static_cast<unsigned char>(rgb[2])); // Blue
+        }
+    }
+
+    // Write to PNG
+    stbi_write_png(filename.c_str(), width, height, 3, pixels.data(), width * 3);
 }
 
 std::vector<std::vector<float>> TerrainController::generateNoiseMap(

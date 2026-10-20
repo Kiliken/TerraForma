@@ -31,10 +31,12 @@ public:
     TerrainController() = default;
     ~TerrainController() = default;
 
-    void GenerateTerrainMesh(const std::string& filename, int width, int depth, float scale);
+    void GenerateTerrainMesh(const std::string& filename, int seed,  int width, int depth, float scale);
 
 private:
     void saveBMP(const std::string& filename, int width, int height, const std::vector<std::vector<std::array<int, 3>>>& colorMap);
+    void saveJPG(const std::string& filename, int width, int height, const std::vector<std::vector<std::array<int, 3>>>& colorMap);
+    void savePNG(const std::string& filename, int width, int height, const std::vector<std::vector<std::array<int, 3>>>& colorMap);
 
     std::vector<std::vector<float>> generateNoiseMap(
         int mapWidth, int mapHeight,

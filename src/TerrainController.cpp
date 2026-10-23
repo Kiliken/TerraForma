@@ -1,7 +1,7 @@
 #include "TerrainController.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
+#include <stb/stb_image_write.h>
 
 std::vector<std::vector<float>> TerrainController::heightMap;
 float TerrainController::terrainScale = 1.0f;

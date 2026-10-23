@@ -1,0 +1,8 @@
+{
+	"comment" : "This is a sample config file for TerraForma",
+	"name" :  "terrain.obj",
+	"seed" : 1024,
+	"width" : 2048,
+	"height" : 2048,
+	"scale" : 1
+}

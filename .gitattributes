@@ -1,4 +1,7 @@
 
 # Third-party code
-/[Dd]ep/[Ii]nclude/stb_image_write.h linguist-vendored
-/[Dd]ep/[Ii]nclude/stb_image.h linguist-vendored
+/[Ss]rc/gl.c linguist-vendored
+/[Dd]ep/[Ii]nclude/stb/* linguist-vendored
+/[Dd]ep/[Ii]nclude/cgltf/* linguist-vendored
+/[Dd]ep/[Ii]nclude/glad/* linguist-vendored
+/[Dd]ep/[Ii]nclude/nlohmann/* linguist-vendored

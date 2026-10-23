@@ -23,7 +23,11 @@ file(GLOB MAIN_FILES
 )
 
 # Executable Files
-add_executable(TerraForma	
+add_executable(TerraForma
+
+	# GLAD
+	src/gl.c
+	
 	# Main
 	${MAIN_FILES}
 )
